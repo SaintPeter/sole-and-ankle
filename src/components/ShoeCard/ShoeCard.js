@@ -36,19 +36,54 @@ const ShoeCard = ({
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
+          <CardAlert type={variant} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price strikethrough={variant === "on-sale"}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {
+            variant === "on-sale" ?
+              <SalePrice>{formatPrice(salePrice)}</SalePrice> : null
+          }
         </Row>
       </Wrapper>
     </Link>
   );
 };
+
+const CardAlert = ({
+  type
+}) => {
+  let color, text;
+  if(type === 'on-sale') {
+    color = COLORS.primary;
+    text = 'Sale';
+  } else if(type === 'new-release') {
+    color = COLORS.secondary;
+    text = 'Just Released!'
+  } else {
+    return null;
+  }
+
+  return (
+    <StyledLabel style={{ '--color': color }}>{text}</StyledLabel>
+  );
+}
+
+const StyledLabel = styled.label`
+  padding: 5px 10px;
+  background-color: var(--color);
+  position: absolute;
+  right: -4px;
+  top: 12px;
+  color: ${COLORS.white};
+  font-weight: 700;
+  border-radius: 2px;
+`;
 
 const Link = styled.a`
   text-decoration: none;
@@ -69,6 +104,8 @@ const Image = styled.img`
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -76,7 +113,11 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  ${p => p.strikethrough 
+          ? 'text-decoration: line-through;' +
+          ' color: ' + COLORS.gray[700] + ';' : ''}
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
